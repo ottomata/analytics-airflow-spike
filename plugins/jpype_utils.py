@@ -2,6 +2,9 @@ import jpype
 import jpype.imports
 from jpype.types import *
 
+
+
+
 def startJVM(*args, **kwargs):
     """
     Starts a jpype JVM if it isn't already started.
@@ -17,7 +20,7 @@ def list_to_arraylist(l):
     """
     Converts a Python list to a jpype java ArrayList
     """
-    startJVM(classpath=classpath)
+    startJVM()
     from java.util import ArrayList
 
     if isinstance(l, ArrayList):
@@ -33,7 +36,7 @@ def dict_to_hashmap(d):
     """
     Converts a python dict to a jpyp Java HashMap.
     """
-    startJVM(classpath=classpath)
+    startJVM()
     from java.util import HashMap
     if isinstance(d, HashMap):
         return d

@@ -8,6 +8,30 @@ from airflow.utils.dates import *
 
 import canary_events
 
+
+
+
+def produce_canary_event(stream_name, test_mode):
+    """
+    Produces canary events for the provided stream name
+    test_mode is set automatically if running a task test via the CLI.
+    """
+
+    # TODO: Parameterize this.
+    canary_event_producer = canary_events.get_canary_event_producer()
+
+    result = canary_events.produce_canary_events(
+        canary_event_producer,
+        [stream_name],
+        # run DRY-RUN if in test mode.
+        dry_run=test_mode
+    )
+
+    if not result:
+        raise AirflowException(f'Failed producing canary event for stream {stream_name}')
+
+    return result
+
 with DAG(
     dag_id='produce_canary_events',
     schedule_interval=timedelta(hours=1),
@@ -31,25 +55,3 @@ with DAG(
             python_callable=produce_canary_event,
             op_args=[stream_name]
         )
-
-
-def produce_canary_event(stream_name, test_mode):
-    """
-    Produces canary events for the provided stream name
-    test_mode is set automatically if running a task test via the CLI.
-    """
-
-    # TODO: Parameterize this.
-    canary_event_producer = canary_events.get_canary_event_producer()
-
-    result = canary_events.produce_canary_events(
-        canary_event_producer,
-        [stream_name],
-        # run DRY-RUN if in test mode.
-        dry_run=test_mode
-    )
-
-    if not result:
-        raise AirflowException(f'Failed producing canary event for stream {stream_name}')
-
-    return result
